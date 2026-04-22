@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🌿 ToxiVet Plantas — Encuesta de Toxicología</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --border: rgba(255,255,255,0.08);
+  --cream: #f0ebe0;
+  --muted: rgba(240,235,224,0.55);
+  --green: #56d364;
+  --green-dim: rgba(86,211,100,0.18);
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.18);
+  --orange: #d29922;
+  --orange-dim: rgba(210,153,34,0.18);
+  --yellow: #e3b341;
+  --blue: #58a6ff;
+  --purple: #bc8cff;
+  --plant-accent: #56d364;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Syne',sans-serif;
+  background:var(--bg);
+  color:var(--cream);
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%,rgba(86,211,100,0.09) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 50% at 90% 100%,rgba(86,211,100,0.05) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(86,211,100,0.03) 0%,transparent 70%);
+}
+.app{width:100%;max-width:500px;min-height:100vh;display:flex;flex-direction:column;position:relative;padding-bottom:40px}
+
+/* ── HEADER ── */
+.header{padding:22px 20px 0;text-align:center}
+.header-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px}
+.logo-pill{
+  background:linear-gradient(135deg,#0d2a12,#1a4a20);
+  border:1px solid rgba(86,211,100,0.35);
+  border-radius:30px;padding:6px 16px;
+  display:flex;align-items:center;gap:8px;
+}
+.logo-text{font-family:'Fraunces',serif;font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.logo-text span{color:var(--green)}
+.header-sub{color:var(--muted);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
+
+/* ── INTRO ── */
+#screen-intro{display:flex;flex-direction:column}
+.intro-card{
+  margin:20px 16px 0;
+  background:var(--surface);border:1.5px solid rgba(86,211,100,0.25);
+  border-radius:20px;padding:20px 18px;
+  box-shadow:0 0 30px rgba(86,211,100,0.08);
+}
+.intro-emoji{font-size:48px;text-align:center;margin-bottom:12px;display:block}
+.intro-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--cream);margin-bottom:6px}
+.intro-desc{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:14px}
+.intro-stats{display:flex;gap:8px;margin-bottom:4px}
+.intro-stat{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;flex:1;text-align:center}
+.intro-stat-num{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--plant-accent)}
+.intro-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+/* ── SCORE WIDGET ── */
+.score-widget{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:10px 0 0;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:12px 18px;
+}
+.score-widget-col{display:flex;flex-direction:column;align-items:center;flex:1}
+.score-widget-num{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:var(--cream);line-height:1}
+.score-widget-best{color:#f0b429}
+.score-widget-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.score-widget-divider{width:1px;height:32px;background:var(--border);flex-shrink:0}
+
+.btn-start{
+  margin:16px 16px 0;
+  background:linear-gradient(135deg,#1a5a20,#2ea043);
+  color:white;border:none;border-radius:14px;
+  padding:16px;font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:600;cursor:pointer;
+  width:calc(100% - 32px);transition:all 0.2s;
+  box-shadow:0 4px 20px rgba(86,211,100,0.25);
+  letter-spacing:0.3px;
+}
+.btn-start:active{transform:scale(0.98)}
+
+/* ── PLANTA PREVIEW LIST ── */
+.preview-section{margin:16px 16px 0}
+.preview-title{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding:0 2px}
+.preview-grid{display:flex;flex-wrap:wrap;gap:6px}
+.preview-chip{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;font-size:11px;color:var(--muted);
+}
+.preview-chip.toxic{border-color:rgba(248,81,73,0.3);color:rgba(248,130,120,0.8)}
+.preview-chip.safe{border-color:rgba(86,211,100,0.3);color:rgba(120,220,140,0.8)}
+
+/* ── PROGRESS ── */
+.progress-wrap{padding:16px 16px 0;display:none}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-label{font-size:12px;color:var(--muted)}
+.prog-pills{display:flex;gap:6px}
+.prog-pill{background:var(--surface2);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--muted);border:1px solid var(--border)}
+.prog-bar-bg{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:2px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);background:var(--green)}
+
+/* ── QUESTION SCREEN ── */
+#screen-question{display:none;flex:1;flex-direction:column;padding:12px 16px 0}
+.q-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;margin-bottom:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+.q-visual{
+  width:100%;height:180px;display:flex;align-items:center;
+  justify-content:center;position:relative;overflow:hidden;
+}
+.q-visual-emoji{font-size:80px;line-height:1;z-index:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3))}
+.q-visual-bg{position:absolute;inset:0}
+.q-body{padding:16px 18px 20px}
+.q-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.q-badge{
+  font-size:10px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;padding:3px 10px;border-radius:20px;
+}
+.badge-plant{background:rgba(86,211,100,0.15);color:var(--plant-accent);border:1px solid rgba(86,211,100,0.3)}
+.badge-plant-safe{background:rgba(86,211,100,0.1);color:#7ee787;border:1px solid rgba(86,211,100,0.2)}
+.q-cat-label{font-size:11px;color:var(--muted)}
+.q-text{font-family:'Fraunces',serif;font-size:18px;font-weight:700;line-height:1.35;color:var(--cream)}
+
+/* ── OPTIONS ── */
+.options{display:flex;flex-direction:column;gap:8px}
+.opt-btn{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:12px;padding:13px 14px;cursor:pointer;
+  display:flex;align-items:flex-start;gap:12px;text-align:left;
+  color:var(--cream);font-family:'Syne',sans-serif;font-size:13.5px;
+  width:100%;transition:all 0.2s;line-height:1.4;
+}
+.opt-btn:not(.disabled):hover{background:var(--surface2);border-color:rgba(255,255,255,0.2)}
+.opt-btn:active:not(.disabled){transform:scale(0.99)}
+.opt-letter{
+  width:28px;height:28px;min-width:28px;background:var(--surface2);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;transition:all 0.2s;flex-shrink:0;margin-top:1px;
+  border:1px solid var(--border);
+}
+.opt-btn.correct{background:var(--green-dim);border-color:var(--green)}
+.opt-btn.correct .opt-letter{background:var(--green);color:#000;border-color:var(--green)}
+.opt-btn.incorrect{background:var(--red-dim);border-color:var(--red)}
+.opt-btn.incorrect .opt-letter{background:var(--red);color:#fff;border-color:var(--red)}
+.opt-btn.disabled{cursor:default;pointer-events:none}
+
+/* ── FEEDBACK ── */
+.feedback{
+  margin-top:12px;background:var(--surface);border-radius:14px;
+  padding:14px 15px;border-left:3px solid var(--green);
+  display:none;animation:slideUp 0.3s ease;
+}
+.feedback.danger{border-left-color:var(--red)}
+.feedback.warning{border-left-color:var(--orange)}
+.feedback.safe{border-left-color:var(--green)}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fb-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fb-icon{font-size:18px}
+.fb-title{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--cream)}
+.fb-text{color:var(--muted);font-size:12.5px;line-height:1.6;margin-bottom:8px}
+.fb-tags{display:flex;flex-wrap:wrap;gap:6px}
+.fb-tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.tag-red{background:rgba(248,81,73,0.2);color:#ff9f9b;border:1px solid rgba(248,81,73,0.35)}
+.tag-orange{background:rgba(210,153,34,0.2);color:#f0b429;border:1px solid rgba(210,153,34,0.35)}
+.tag-yellow{background:rgba(227,179,65,0.2);color:#e3b341;border:1px solid rgba(227,179,65,0.35)}
+.tag-green{background:rgba(63,185,80,0.2);color:#7ee787;border:1px solid rgba(63,185,80,0.35)}
+.tag-purple{background:rgba(188,140,255,0.2);color:#d2b0ff;border:1px solid rgba(188,140,255,0.35)}
+.tag-blue{background:rgba(88,166,255,0.2);color:#79c0ff;border:1px solid rgba(88,166,255,0.35)}
+.human-risk{
+  margin-top:8px;background:rgba(88,166,255,0.08);border:1px solid rgba(88,166,255,0.2);
+  border-radius:8px;padding:8px 10px;font-size:11.5px;color:rgba(120,192,255,0.9);
+  display:flex;gap:7px;align-items:flex-start;
+}
+.human-risk span:first-child{flex-shrink:0}
+
+.btn-next{
+  margin-top:12px;background:var(--surface2);color:var(--cream);
+  border:1px solid var(--border);border-radius:12px;padding:14px;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;width:100%;transition:all 0.2s;display:none;
+}
+.btn-next:active{transform:scale(0.98)}
+.btn-exit{
+  margin-top:8px;background:transparent;color:rgba(240,235,224,0.3);
+  border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;
+  font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;width:100%;display:none;
+}
+
+/* ── RESULTS ── */
+#screen-results{
+  display:none;flex:1;flex-direction:column;
+  padding:20px 16px 40px;align-items:center;
+}
+.result-score-wrap{text-align:center;margin-bottom:20px}
+.score-ring{
+  width:130px;height:130px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 16px;position:relative;
+}
+.score-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.score-ring-num{font-family:'Fraunces',serif;font-size:46px;font-weight:900;line-height:1;color:var(--cream)}
+.score-ring-sub{font-size:11px;color:var(--muted);letter-spacing:1px}
+.result-title{font-family:'Fraunces',serif;font-size:24px;font-weight:900;color:var(--cream);margin-bottom:6px;text-align:center}
+.result-msg{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:340px;margin:0 auto 20px;text-align:center}
+.vet-banner{
+  background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.2);
+  border-radius:12px;padding:12px 14px;margin-bottom:16px;
+  display:flex;gap:10px;align-items:flex-start;width:100%;max-width:420px;
+}
+.vet-banner-icon{font-size:20px;flex-shrink:0}
+.vet-banner-text{font-size:12.5px;color:rgba(248,180,170,0.9);line-height:1.5}
+.summary-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:16px;width:100%;max-width:420px;margin-bottom:16px;
+}
+.summary-head{font-family:'Fraunces',serif;font-size:15px;font-weight:700;margin-bottom:12px;color:var(--cream)}
+.sum-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.sum-item:last-child{border-bottom:none}
+.sum-emoji{font-size:22px;width:32px;text-align:center;flex-shrink:0}
+.sum-info{flex:1;min-width:0}
+.sum-name{font-size:13px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sum-sub{font-size:11px;color:var(--muted)}
+.sum-result{font-size:18px;flex-shrink:0}
+.btn-newround{
+  background:linear-gradient(135deg,#1a5a20,#2ea043);
+  color:white;border:none;border-radius:14px;
+  padding:16px;font-family:'Syne',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;width:100%;max-width:420px;margin-bottom:10px;
+  box-shadow:0 4px 16px rgba(86,211,100,0.25);
+}
+.btn-back{
+  background:var(--surface2);color:var(--muted);border:1px solid var(--border);
+  border-radius:14px;padding:14px;font-family:'Syne',sans-serif;font-size:14px;
+  cursor:pointer;width:100%;max-width:420px;
+}
+
+/* ── OVERLAY PANELS ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+  backdrop-filter:blur(4px);
+}
+.overlay.open{opacity:1;pointer-events:all}
+.panel{
+  background:var(--surface);border-radius:20px 20px 0 0;
+  width:100%;max-width:500px;max-height:88vh;overflow-y:auto;
+  border-top:1px solid rgba(255,255,255,0.1);
+  transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.overlay.open .panel{transform:translateY(0)}
+.panel-header{
+  position:sticky;top:0;background:var(--surface);
+  padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-between;z-index:1;
+}
+.panel-title{font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:var(--cream)}
+.panel-close{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:6px 12px;color:var(--muted);
+  font-family:'Syne',sans-serif;font-size:12px;cursor:pointer;
+}
+.panel-body{padding:16px}
+.ref-block{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:14px;margin-bottom:12px;
+}
+.ref-title{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--cream);margin-bottom:6px}
+.ref-text{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:8px}
+.ref-link{
+  display:block;font-size:11.5px;color:var(--green);
+  text-decoration:none;word-break:break-all;opacity:0.85;
+}
+.ref-link:hover{opacity:1;text-decoration:underline}
+.disclaimer{
+  background:rgba(210,153,34,0.08);border:1px solid rgba(210,153,34,0.2);
+  border-radius:10px;padding:10px 12px;font-size:11.5px;
+  color:rgba(240,195,90,0.85);line-height:1.5;margin-top:4px;
+}
+.author-card{
+  text-align:center;padding:20px 16px;background:var(--surface2);
+  border:1px solid rgba(86,211,100,0.2);border-radius:14px;margin-bottom:14px;
+}
+.author-dog{font-size:44px;display:block;margin-bottom:10px}
+.author-name{font-family:'Fraunces',serif;font-size:20px;font-weight:900;color:var(--cream);margin-bottom:4px}
+.author-role{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+/* ── FOOTER BUTTONS ── */
+.footer-btns{
+  display:flex;gap:8px;margin:16px 16px 0;
+}
+.footer-btn{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:10px 8px;font-family:'Syne',sans-serif;
+  font-size:11px;color:var(--muted);cursor:pointer;text-align:center;
+  transition:all 0.2s;
+}
+.footer-btn:hover{background:var(--surface2);border-color:rgba(255,255,255,0.15);color:var(--cream)}
+
+/* ── EXIT MODAL ── */
+#exit-modal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:200;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.exit-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:24px;max-width:320px;width:90%;text-align:center;
+}
+.exit-box h3{font-family:'Fraunces',serif;font-size:18px;margin-bottom:8px;color:var(--cream)}
+.exit-box p{font-size:13px;color:var(--muted);margin-bottom:20px}
+.exit-btns{display:flex;gap:10px}
+.exit-btns button{flex:1;padding:12px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;cursor:pointer;border:none}
+.exit-cancel{background:var(--surface2);color:var(--cream);border:1px solid var(--border)!important}
+.exit-confirm{background:var(--red-dim);color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-pill">
+        <span style="font-size:20px">🌿</span>
+        <span class="logo-text">ToxiVet <span>Plantas</span></span>
+      </div>
+    </div>
+    <div class="header-sub">Toxicología · Vegetales · Chile</div>
+  </div>
+
+  <!-- INTRO -->
+  <div id="screen-intro">
+    <div class="intro-card">
+      <span class="intro-emoji">🌱</span>
+      <div class="intro-title">¿Qué plantas son peligrosas?</div>
+      <div class="intro-desc">Descubre qué plantas de jardín, living y jardines chilenos representan un riesgo real para perros y gatos — y cuáles son completamente seguras.</div>
+      <div class="intro-stats">
+        <div class="intro-stat">
+          <div class="intro-stat-num">30</div>
+          <div class="intro-stat-label">Tóxicas</div>
+        </div>
+        <div class="intro-stat">
+          <div class="intro-stat-num">10</div>
+          <div class="intro-stat-label">Seguras</div>
+        </div>
+        <div class="intro-stat">
+          <div class="intro-stat-num">10</div>
+          <div class="intro-stat-label">Preguntas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score widget -->
+    <div style="margin:0 16px">
+      <div class="score-widget" id="score-widget" style="display:none">
+        <div class="score-widget-col">
+          <div class="score-widget-num" id="sw-rounds">—</div>
+          <div class="score-widget-label">Rondas</div>
+        </div>
+        <div class="score-widget-divider"></div>
+        <div class="score-widget-col">
+          <div class="score-widget-num score-widget-best" id="sw-best">—</div>
+          <div class="score-widget-label">Mejor</div>
+        </div>
+        <div class="score-widget-divider"></div>
+        <div class="score-widget-col">
+          <div class="score-widget-num" id="sw-avg">—</div>
+          <div class="score-widget-label">Promedio</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()">Comenzar encuesta 🌿</button>
+
+    <!-- Preview de plantas destacadas -->
+    <div class="preview-section">
+      <div class="preview-title">🔴 Plantas altamente peligrosas</div>
+      <div class="preview-grid">
+        <span class="preview-chip toxic">🌸 Lirio</span>
+        <span class="preview-chip toxic">🌺 Adelfa</span>
+        <span class="preview-chip toxic">🌴 Palma de Sagú</span>
+        <span class="preview-chip toxic">🌿 Filodendro</span>
+        <span class="preview-chip toxic">🌵 Aloe Vera</span>
+        <span class="preview-chip toxic">🍃 Pothos</span>
+        <span class="preview-chip toxic">🌺 Azalea</span>
+        <span class="preview-chip toxic">🌳 Cinamomo</span>
+      </div>
+    </div>
+    <div class="preview-section" style="margin-bottom:4px">
+      <div class="preview-title">✅ Alternativas seguras</div>
+      <div class="preview-grid">
+        <span class="preview-chip safe">🌿 Calatea</span>
+        <span class="preview-chip safe">🌿 Helecho Boston</span>
+        <span class="preview-chip safe">🌸 Orquídea</span>
+        <span class="preview-chip safe">🪴 Pilea</span>
+        <span class="preview-chip safe">😸 Hierba gatera</span>
+      </div>
+    </div>
+    <div class="footer-btns">
+      <button class="footer-btn" onclick="openPanel('panel-sources')">📚 Fuentes científicas</button>
+      <button class="footer-btn" onclick="openPanel('panel-author')">🐕 Autor</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="prog-top">
+      <span class="prog-label" id="prog-label">Pregunta 1 de 10</span>
+      <div class="prog-pills">
+        <span class="prog-pill">🌿 Plantas</span>
+        <span class="prog-pill" id="prog-score">✓ 0</span>
+      </div>
+    </div>
+    <div class="prog-bar-bg">
+      <div class="prog-bar-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div id="screen-question">
+    <div class="q-card">
+      <div class="q-visual">
+        <div class="q-visual-bg" id="q-visual-bg"></div>
+        <div class="q-visual-emoji" id="q-emoji">🌿</div>
+      </div>
+      <div class="q-body">
+        <div class="q-meta">
+          <span class="q-badge" id="q-badge">Planta</span>
+          <span class="q-cat-label" id="q-cat-label">Categoría</span>
+        </div>
+        <div class="q-text" id="q-text">Pregunta aquí</div>
+      </div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-head">
+        <span class="fb-icon" id="fb-icon">✅</span>
+        <span class="fb-title" id="fb-title">¡Correcto!</span>
+      </div>
+      <div class="fb-text" id="fb-text"></div>
+      <div class="fb-tags" id="fb-tags"></div>
+      <div class="human-risk" id="human-risk" style="display:none">
+        <span>👤</span><span id="human-risk-text"></span>
+      </div>
+    </div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Siguiente →</button>
+    <button class="btn-exit" id="btn-exit" onclick="exitToMenu()">✕ Salir al menú</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="screen-results">
+    <div class="result-score-wrap">
+      <div class="score-ring" id="score-ring">
+        <svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="58" fill="none" stroke="#21262d" stroke-width="8"/><circle id="score-arc" cx="65" cy="65" r="58" fill="none" stroke="#56d364" stroke-width="8" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4"/></svg>
+        <div class="score-ring-num" id="score-num">0</div>
+        <div class="score-ring-sub" id="score-sub">DE 10</div>
+      </div>
+      <div class="result-title" id="result-title">¡Bien hecho!</div>
+      <div class="result-msg" id="result-msg">Resultado</div>
+    </div>
+    <div class="vet-banner">
+      <span class="vet-banner-icon">🏥</span>
+      <div class="vet-banner-text">Si tu mascota ingirió alguna planta peligrosa, contacta a tu veterinario <strong>de inmediato</strong>. No induzcas el vómito sin indicación profesional.</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-head">Resumen de la ronda</div>
+      <div id="summary-list"></div>
+    </div>
+    <button class="btn-newround" onclick="startQuiz()">Nueva ronda 🔄</button>
+    <button class="btn-back" onclick="showIntro()">← Volver al inicio</button>
+  </div>
+
+  <!-- PANEL: FUENTES -->
+  <div class="overlay" id="panel-sources" onclick="closePanel('panel-sources',event)">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📚 Fuentes científicas</span>
+        <button class="panel-close" onclick="closePanel('panel-sources')">← Volver</button>
+      </div>
+      <div class="panel-body">
+        <div class="ref-block">
+          <div class="ref-title">Merck Veterinary Manual</div>
+          <div class="ref-text">Referencia veterinaria de uso mundial. Contiene fichas toxicológicas completas con dosis mínimas tóxicas, LD50, mecanismos de acción, signos clínicos y protocolos de tratamiento para cada tóxico incluido en esta encuesta.</div>
+          <a class="ref-link" href="https://www.merckvetmanual.com/toxicology" target="_blank">→ merckvetmanual.com/toxicology</a>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">Small Animal Toxicology (3ª ed.)</div>
+          <div class="ref-text">Peterson M.E. & Talcott P.A. (2013). Elsevier Saunders. Texto de referencia con tablas completas de dosis mg/kg, tiempos de aparición de signos, lesiones histopatológicas y protocolos de descontaminación, antídotos y soporte.</div>
+          <a class="ref-link" href="https://www.elsevier.com/books/small-animal-toxicology/peterson/978-1-4557-0717-1" target="_blank">→ elsevier.com · Small Animal Toxicology</a>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">ASPCA Animal Poison Control Center</div>
+          <div class="ref-text">Base de datos de intoxicaciones animales más grande del mundo con más de 3.7 millones de casos. Línea de consulta 24/7: +1 (888) 426-4435.</div>
+          <a class="ref-link" href="https://www.aspca.org/pet-care/animal-poison-control" target="_blank">→ aspca.org/pet-care/animal-poison-control</a>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">ASPCA — Plantas tóxicas y no tóxicas</div>
+          <div class="ref-text">Base de datos de más de 1.000 plantas clasificadas por toxicidad para perros, gatos y caballos. Consulta indispensable antes de comprar cualquier planta para el hogar.</div>
+          <a class="ref-link" href="https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants" target="_blank">→ aspca.org · Toxic and Non-Toxic Plants</a>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">Facultad de Ciencias Veterinarias — Chile</div>
+          <div class="ref-text">Universidad de Chile y Universidad Austral de Chile publican reportes periódicos sobre intoxicaciones frecuentes en contexto nacional, incluyendo plantas endémicas como Palán Palán y Cinamomo.</div>
+          <a class="ref-link" href="https://bibliotecadigital.uchile.cl" target="_blank">→ Biblioteca Digital UChile · Facultad de Cs. Veterinarias</a>
+        </div>
+        <div class="disclaimer">⚠️ Esta encuesta es de carácter educativo. Ante cualquier sospecha de intoxicación de tu mascota, contacta a un veterinario de urgencia inmediatamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: AUTOR -->
+  <div class="overlay" id="panel-author" onclick="closePanel('panel-author',event)">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🐕 Autor</span>
+        <button class="panel-close" onclick="closePanel('panel-author')">← Volver</button>
+      </div>
+      <div class="panel-body">
+        <div class="author-card">
+          <span class="author-dog">🐕</span>
+          <div class="author-name">Jonatan Ortiz</div>
+          <div class="author-role">Creador de ToxiVet Chile</div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">Sobre este proyecto</div>
+          <div class="ref-text">ToxiVet Chile nació con el objetivo de medir y a la vez informar sobre los peligros existentes en nuestros hogares para los compañeros animales. Existe una cantidad importante de sustancias, plantas y alimentos cotidianos que representan un riesgo real para las mascotas, y en muchos casos el tiempo en actuar determina la vida o la muerte. Esta encuesta busca que cada persona pueda evaluar su propio conocimiento y, al mismo tiempo, llevarse información útil y verificada para proteger a quienes comparten su hogar.</div>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">🌐 Cómo está publicada esta página</div>
+          <div class="ref-text">ToxiVet Chile está publicada de forma completamente gratuita usando <strong style="color:#f0ebe0">GitHub Pages</strong>, una plataforma que permite alojar sitios web estáticos sin costo directamente desde un repositorio.</div>
+          <a class="ref-link" href="https://pages.github.com" target="_blank">→ pages.github.com · Publicar gratis con GitHub Pages</a>
+        </div>
+        <div class="ref-block">
+          <div class="ref-title">🤖 Acerca de Claude (Anthropic)</div>
+          <div class="ref-text">Claude es un asistente de inteligencia artificial desarrollado por Anthropic, utilizado para estructurar, redactar y programar esta encuesta interactiva.</div>
+          <a class="ref-link" href="https://www.anthropic.com" target="_blank">→ anthropic.com</a>
+        </div>
+        <div class="disclaimer">Esta herramienta es de uso educativo y divulgativo. Todos los datos toxicológicos provienen de fuentes científicas verificables.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXIT MODAL -->
+  <div id="exit-modal">
+    <div class="exit-box">
+      <h3>¿Salir de la encuesta?</h3>
+      <p>Tu progreso de esta ronda se perderá.</p>
+      <div class="exit-btns">
+        <button class="exit-cancel" onclick="exitCancel()">Continuar</button>
+        <button class="exit-confirm" onclick="exitConfirm()">Salir</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ══════════════════════════════════════════════════════
+// BANCO DE PLANTAS TÓXICAS (30)
+// ══════════════════════════════════════════════════════
+const PLANTS = [
+  {type:'plant',name:"Lirios (Lilium spp.)",emoji:"🌸",bg:"linear-gradient(135deg,#2a0a20,#6a1845)",cat:"Flor ornamental · MÁXIMO RIESGO GATOS",q:"Los Lirios son flores muy comunes en florerías y hogares chilenos. ¿Cuál es el riesgo REAL para los gatos?",opts:[{t:"Solo el polen es peligroso si se inhala en exceso",c:false},{t:"Toda la planta es letal — incluso el agua del jarrón puede causar falla renal fatal",c:true},{t:"Son peligrosos para perros pero seguros para gatos",c:false},{t:"Solo tóxicos si se ingieren en gran cantidad",c:false}],fb:"Los Lirios (Lilium) son la causa más frecuente de falla renal aguda fatal en gatos. Incluso lamer el agua del jarrón, el polen caído en el pelaje o morder una hoja provoca insuficiencia renal irreversible en 24-72 hrs. En perros causan solo síntomas gastrointestinales leves.",tags:["tag-red:🔴 LETAL para gatos","tag-orange:🟠 Leve en perros"],human:"Sin riesgo significativo para humanos al tacto normal."},
+  {type:'plant',name:"Aloe Vera",emoji:"🌵",bg:"linear-gradient(135deg,#0d2a10,#1e5a20)",cat:"Planta medicinal · Hogar chileno",q:"El Aloe Vera es usado medicinalmente en Chile. ¿Qué componentes lo hacen tóxico para mascotas?",opts:[{t:"El gel interno es tóxico, la piel exterior es segura",c:false},{t:"Los compuestos quimicos (antraquinonas y saponinas) presentes en la planta provocan vómitos y diarrea",c:true},{t:"Es completamente beneficioso para mascotas como para humanos",c:false},{t:"Solo las raíces presentan toxicidad real",c:false}],fb:"El Aloe Vera contiene Compuestos quimicos (aloína, barbaloína) y saponinas tóxicas para perros y gatos. Provoca vómitos, diarrea, letargo y en casos de ingestión masiva, problemas sanguíneos (anemia hemolítica).",tags:["tag-orange:🟠 Toxicidad moderada","tag-red:🔴 Anemia posible"],human:"El gel de Aloe Vera es seguro y beneficioso para humanos. Solo la piel de la planta (el látex) puede ser irritante digestivo."},
+  {type:'plant',name:"Filodendro (Philodendron)",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a15,#1a5a2a)",cat:"Planta tropical de interior",q:"El Filodendro es una de las plantas de interior más vendidas en Chile. ¿porque es toxica?",opts:[{t:"Produce un gas tóxico al descomponerse",c:false},{t:"Sus compuestos quimicos (oxalatos) forman agujas microscópicas que irritan la boca al masticarse",c:true},{t:"Solo tóxico para animales con problemas renales previos",c:false},{t:"Es completamente pet-friendly como declara la sociedad americana para la prevención de la crueldad hacia los animales (ASPCA)",c:false}],fb:"El Filodendro contiene cristales de oxalato de calcio (raphides) en todas sus partes. Al masticarse, liberan miles de agujas microscópicas que penetran el tejido oral y esofágico, causando ardor inmediato e intenso, hipersalivación, vómitos y dificultad para tragar.",tags:["tag-red:🔴 Alta toxicidad","tag-orange:🟠 Irritación oral severa"],human:"Irritación de piel y mucosas en humanos al manipular savia."},
+  {type:'plant',name:"Potus / Pothos",emoji:"🍃",bg:"linear-gradient(135deg,#0a2a10,#1a5530)",cat:"Enredadera muy popular · Chile",q:"El Pothos o Potus es probablemente la planta más vendida en Chile. ¿Es seguro tenerla con mascotas?",opts:[{t:"Sí, es una de las pocas plantas 100% pet-friendly",c:false},{t:"No — genera microcristales (oxalatos) que causan ardor oral, vómitos y dificultad para tragar",c:true},{t:"Solo tóxico en cantidades muy grandes (más de 50 hojas)",c:false},{t:"Solo el tallo es tóxico, las hojas son seguras",c:false}],fb:"El Pothos contiene cristales (oxalato cálcico) en todas sus partes. Al ser masticado libera cristales que causan ardor inmediato en boca y garganta, hipersalivación, vómitos y dificultad para deglutir.",tags:["tag-red:🔴 Alta toxicidad","tag-orange:🟠 Consulta frecuente en Chile"],human:"Irritación cutánea y ocular al contacto con savia."},
+  {type:'plant',name:"Costilla de Adán (Monstera)",emoji:"🌿",bg:"linear-gradient(135deg,#0d2a18,#1e5a38)",cat:"Planta tropical de moda",q:"La Monstera o Costilla de Adán está muy de moda. ¿Su fruto maduro es seguro para mascotas?",opts:[{t:"Toda la planta incluyendo el fruto maduro es tóxica",c:false},{t:"Solo el fruto maduro es comestible — hojas y tallo tienen microcristales (oxalatos) que son tóxicos",c:true},{t:"Es completamente segura en todas sus partes",c:false},{t:"Solo las raíces aéreas son peligrosas",c:false}],fb:"En la Monstera, el fruto completamente maduro puede ser comestible. Sin embargo, las hojas, tallos y frutos inmaduros contienen cristales (oxalato de calcio) que causa irritación oral intensa, hipersalivación y vómitos.",tags:["tag-orange:🟠 Hojas y tallo tóxicos","tag-green:✅ Fruto maduro menos riesgoso"],human:"El fruto maduro de Monstera es comestible para humanos."},
+  {type:'plant',name:"Cala blanca",emoji:"🤍",bg:"linear-gradient(135deg,#1a2a0a,#3a5a18)",cat:"Flor ornamental · Muy común en Chile",q:"La Cala blanca es icónica en jardines y eventos chilenos. ¿Tiene alguna parte que sea peligrosa?",opts:[{t:"Las flores blancas son las más tóxicas",c:true},{t:"Solo las raíces son peligrosas",c:false},{t:"Es completamente segura para perros y gatos",c:false},{t:"Solo tóxica durante su floración",c:false}],fb:"Todas las partes de la Cala contienen cristales (oxalato cálcico), pero las (flores blancas) concentran mayor toxicidad. Provoca ardor e irritación severa en boca, salivación intensa, hinchazón facial y vómitos.",tags:["tag-red:🔴 Alta toxicidad","tag-orange:🟠 Hinchazón facial posible"],human:"Irritación oral e intestinal en niños pequeños que muerdan flores."},
+  {type:'plant',name:"Azalea",emoji:"🌺",bg:"linear-gradient(135deg,#2a0a15,#6a1835)",cat:"Arbusto ornamental · Jardines chilenos",q:"Las Azaleas adornan muchos jardines en Chile. ¿Qué riesgo existe al consumirlas, qué sistema se ve afectado?",opts:[{t:"Poco Riesgo real ,leve indigestión , afecta al sistema digestivo solamente",c:false},{t:"El sistema nervioso y cardiovascular — pueden causar la muerte",c:true},{t:"Solo causan dermatitis al contacto",c:false},{t:"Solo afectan a gatos gestantes",c:false}],fb:"Las Azaleas contienen Quimicos (grayanotoxinas) que afectan a los canales de sodio en células nerviosas y cardíacas. Provoca salivación excesiva, vómitos, diarrea, hipotensión, bradicardia, temblores, coma y puede ser fatal.",tags:["tag-red:🔴 Potencialmente mortal","tag-red:🔴 Afecta corazón y nervios"],human:"La 'miel loca' de abejas que visitan rododendros puede intoxicar humanos."},
+  {type:'plant',name:"Laurel en Flor / Adelfa (Nerium oleander)",emoji:"🌺",bg:"linear-gradient(135deg,#2a0a0a,#6a1520)",cat:"Arbusto ornamental · MUY COMÚN EN CHILE",q:"El Laurel en Flor, es uno de los arbustos ornamentales más plantados en carreteras de Chile. ¿Cuál es su verdadero peligro?",opts:[{t:"Solo causa irritación digestiva leve",c:false},{t:"Extremadamente tóxica — una hoja puede matar a un perro mediano",c:true},{t:"Solo tóxica para caballos y ganado que la comen ocasionalmente",c:false},{t:"Solo el humo de su madera quemada es peligroso, seca es segura para el ganado.",c:false}],fb:"El Laurel en Flor (también llamado Adelfa) es una de las plantas más tóxicas del mundo. Contiene Toxinas (oleandrina y neriósido). Una sola hoja puede ser mortal para un perro o gato mediano. Afecta directamente al corazón causando arritmias fatales.",tags:["tag-red:🔴 UNA HOJA PUEDE SER MORTAL","tag-red:🔴 Glucósidos cardíacos"],human:"Altamente tóxica para humanos también. NO quemar su madera — el humo es tóxico."},
+  {type:'plant',name:"Palma de Sagú (Cycas revoluta)",emoji:"🌴",bg:"linear-gradient(135deg,#0a2a10,#1a4a20)",cat:"Palmera ornamental · Riesgo extremo",q:"La Palma de Sagú se vende como palmera ornamental. ¿Cuál es su tasa de mortalidad en perros con tratamiento?",opts:[{t:"Menos del 5% — tiene buen pronóstico",c:false},{t:"Entre el 50-75% incluso con tratamiento veterinario intensivo",c:true},{t:"0% — es solo irritante, no letal",c:false},{t:"Solo mortal si no se trata dentro de las primeras 24 horas",c:false}],fb:"La Palma de Sagú contiene un veneno natural llamado cicasina, una potente hepatotoxina. La tasa de mortalidad en perros es del 50-75% INCLUSO con tratamiento veterinario intensivo. Las semillas son las más tóxicas pero toda la planta es venenosa.",tags:["tag-red:🔴 MORTALIDAD 50-75% en perros","tag-red:🔴 Falla hepática irreversible"],human:"Tóxica también para humanos."},
+  {type:'plant',name:"Planta de la Suerte ( planta del castigo)",emoji:"🌱",bg:"linear-gradient(135deg,#0a2a0a,#1a5018)",cat:"Planta tropical de oficinas y hogares",q:"La Planta de la Suerte (planta del Castigo) es muy popular en oficinas chilenas. ¿Por qué se le llamó históricamente 'planta del castigo'?",opts:[{t:"Porque sus espinas causan heridas graves",c:false},{t:"Produce Cristales (oxalatos) que inflaman la boca y garganta impidiendo hablar temporalmente",c:true},{t:"Porque su olor causa dolores de cabeza intensos",c:false},{t:"Por su uso histórico como planta de mala suerte",c:false}],fb:"La Planta de la Suerte (Dieffenbachia) fue llamada 'muda', popularmente usada por esclavistas como castigo: al masticarla, los cristales de oxalato inflamaban la boca y garganta impidiendo hablar por horas. En mascotas, puede inflamar vías respiratorias al punto de ser mortal.",tags:["tag-red:🔴 Inflamación vías respiratorias","tag-red:🔴 Potencialmente fatal"],human:"Peligrosa para humanos también — especialmente para niños pequeños."},
+  {type:'plant',name:"Lirio de Paz / Espatifilo",emoji:"🌸",bg:"linear-gradient(135deg,#0a2a1a,#1a5535)",cat:"Planta de interior · Muy vendida en Chile",q:"El Lirio de Paz es famoso por purificar el aire. ¿Qué riesgo específico representa para los gatos?",opts:[{t:"Solo causa dermatitis si el gato roza las hojas",c:false},{t:"Produce Cristales (oxalatos) que provocan insuficiencia renal aguda en gatos",c:true},{t:"Es 100% seguro — aprobado por la NASA como planta purificadora",c:false},{t:"Solo tóxico para perros, los gatos son inmunes",c:false}],fb:"El Lirio de Paz contiene oxalatos de calcio y posiblemente otros compuestos nefrotóxicos. En gatos puede causar insuficiencia renal aguda. En perros: irritación oral severa e hipersalivación.",tags:["tag-red:🔴 Falla renal en gatos","tag-orange:🟠 Irritación oral en perros"],human:"Irritación oral si se ingieren hojas."},
+  {type:'plant',name:"Drácena o Palo de Agua (Dracaena spp.)",emoji:"🌴",bg:"linear-gradient(135deg,#1a1a2a,#2a2a5a)",cat:"Planta ornamental · Interior",q:"La Drácena (incluyendo el 'Bambú de la suerte') ¿qué efecto extraño produce en gatos?",opts:[{t:"Produce alucinaciones similares a la hierba gatera",c:false},{t:"Provoca  un efecto llamado midriasis (dilatación de pupilas) además de vómitos y depresión",c:true},{t:"No produce ningún efecto en gatos",c:false},{t:"Causa agresividad extrema y temporal llamada Flor de la Furia , no la deben consumir en Celo ",c:false}],fb:"La Drácena contiene  ciertos químicos (saponinas esteroidales) que gatos provoca midriasis (pupilas muy dilatadas), además de vómitos, anorexia, hipersalivación y depresión. El 'Bambú de la suerte' es en realidad una Dracaena sanderiana.",tags:["tag-orange:🟠 Toxicidad moderada","tag-purple:🔵 Midriasis en gatos"],human:"Esencialmente no tóxica para humanos en uso normal."},
+  {type:'plant',name:"Planta de Jade (Crassula ovata)",emoji:"🪴",bg:"linear-gradient(135deg,#0a200a,#1a4015)",cat:"Suculenta ornamental · Hogar",q:"La Planta de Jade es muy popular en hogares chilenos. ¿Qué sistema podría afectar si es consumida por su mascota?",opts:[{t:"El sistema digestivo con vómitos leves pasajeros",c:false},{t:"El sistema nervioso — causa depresión, ataxia  (pérdida de coordinación y movimientos involuntarios) y taquicardia",c:true},{t:"Solo causa dermatitis de contacto si se salpican sus jugos",c:false},{t:"Es completamente segura para mascotas, es más tiene un efecto tranquilizante",c:false}],fb:"La Planta de Jade contiene componentes no del todo identificados que afectan el sistema nervioso central. En perros y gatos provoca depresión, ataxia (pérdida de coordinación), taquicardia y vómitos.",tags:["tag-orange:🟠 Toxicidad moderada","tag-orange:🟠 Afecta sistema nervioso"],human:"Sin toxicidad significativa para humanos."},
+  {type:'plant',name:"Hortensia",emoji:"💙",bg:"linear-gradient(135deg,#0a1a3a,#1a3a7a)",cat:"Arbusto ornamental · Chile",q:"Las Hortensias ¿que sucede si mi mascota la consume de forma accidental?",opts:[{t:"Contienen ciertos cristales (oxalatos) que irritan la boca",c:false},{t:"Contienen Toxinas Naturales (glucósidos cianogénicos) —que liberan cianuro al metabolizarse",c:true},{t:"Son completamente seguras para mascotas",c:false},{t:"Solo tóxicas para gatos, los perros son resistentes, excepto cachorros",c:false}],fb:"La Hortensia contiene toxinas naturales (hidrangeína y phyllodulcina) que se metabolizan liberando cianuro. Provoca vómitos, diarrea, letargo y en ingestiones importantes puede causar depresión respiratoria.",tags:["tag-red:🔴 Glucósidos cianogénicos","tag-orange:🟠 Toxicidad moderada-alta"],human:"Intoxicación posible en humanos si se ingieren cantidades considerables."},
+  {type:'plant',name:"El Cinamomo  o Arbol del Paraiso",emoji:"🌳",bg:"linear-gradient(135deg,#1a2a0a,#3a5a18)",cat:"Árbol ornamental · MUY COMÚN CHILE",q:"El árbol del paraíso o Cinamomo es el árbol ornamental más plantado en ciudades chilenas. ¿En qué época representa mayor riesgo?",opts:[{t:"En primavera cuando florece, el polen es tremendamente irritante",c:false},{t:"En otoño-invierno cuando caen las bayas amarillas maduras al suelo",c:true},{t:"Solo en verano cuando el sol activa sus toxinas que se precipitan como una resina",c:false},{t:"No representa riesgo real para mascotas domésticas ya que incluso es medicinal",c:false}],fb:"El mayor peligro del Arbol del Paraiso (Cinamomo) ocurre cuando caen las bayas maduras amarillas al suelo. Los perros pueden comerlas en paseos. Provoca vómitos, diarrea, letargo, convulsiones y puede ser fatal en ingestiones importantes.",tags:["tag-red:🔴 Alta toxicidad","tag-red:🔴 Bayas caídas: riesgo en paseos"],human:"Intoxicaciones reportadas en niños que ingieren bayas."},
+  {type:'plant',name:"Palán Palán (Nicotiana glauca)",emoji:"🌿",bg:"linear-gradient(135deg,#1a2a0a,#3a5218)",cat:"Arbusto silvestre · Chile árido",q:"El Palán Palán crece en zonas áridas de Chile, ¿con que planta(s) comparte propiedades?",opts:[{t:"Con los cactus, posee mucha agua y resiste mucho el calor",c:false},{t:"El tabaco  contiene un químico llamado anabasina similar a la Nicotina , altamente tóxica",c:true},{t:"las Arverjas, genera Bayas muy nutritivas altas en Potasio ",c:false},{t:"Las orquídeas, en la epoca del desierto floreado, produce flores de multiples colores ",c:false}],fb:"El Palán Palán pertenece a la familia Solanaceae y contiene anabasina. Es extremadamente tóxico: causa hiperexcitabilidad, salivación, vómitos, debilidad muscular, parálisis y puede ser mortal.",tags:["tag-red:🔴 ALTAMENTE TÓXICO","tag-red:🔴 Parálisis y muerte posible"],human:"Tóxico para humanos también."},
+  {type:'plant',name:"Lengua de Suegra (Sansevieria)",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a15,#1a4a28)",cat:"Planta de interior muy popular",q:"La Lengua de Suegra ¿es inofensiva para mascotas?",opts:[{t:"Sí — es completamente segura, constituye un buen snack",c:false},{t:"No , genera quimicos (saponinas) que causan vómitos, diarrea y salivación excesiva",c:true},{t:"Solo tóxica si el animal come más de 10 hojas. 9 es el numero seguro",c:false},{t:"Solo el tallo central es tóxico, las hojas perifericas son comestibles",c:false}],fb:"La Lengua de Suegra (Sansevieria)contiene Toxinas (saponinas) que al ingerirse causan náuseas, vómitos, diarrea y salivación excesiva. No suele ser mortal pero puede causar molestia significativa.",tags:["tag-orange:🟠 Toxicidad moderada","tag-yellow:🟡 Raramente grave"],human:"Sin riesgo significativo para humanos en uso decorativo."},
+  {type:'plant',name:"Anturio (Anthurium spp.)",emoji:"❤️",bg:"linear-gradient(135deg,#2a0505,#6a1010)",cat:"Planta tropical decorativa",q:"El Anturio o Planta del Amor ¿qué daño inmediato produce al ser mordido?",opts:[{t:"Produce toxicidad hepática de aparición lenta",c:false},{t:"Libera cristales  (oxalato) que causan ardor e inflamación oral inmediatos",c:true},{t:"No produce ningún daño por morderla, al comer produce efectos de somnolencia",c:false},{t:"Solo tóxico si se consume la espata (parte roja)",c:false}],fb:"El Anturio contiene raphides(pequeñas agujas)en todas sus partes. Al morderse, se liberan miles de cristales microscópicos causando ardor intenso e inmediato, hipersalivación, hinchazón de labios y lengua y vómitos.",tags:["tag-red:🔴 Irritación oral inmediata e intensa","tag-orange:🟠 Dificultad para tragar"],human:"Causa irritación oral e intestinal en personas que ingieren hojas."},
+  {type:'plant',name:"Eucalipto (Eucalyptus spp.)",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a20,#1a5a40)",cat:"Árbol nativo de Australia · Muy común Chile",q:"El Eucalipto ¿por qué es especialmente riesgoso para gatos?",opts:[{t:"Su humo de su quema es peligroso para ojos y mucosas",c:false},{t:"Los gatos no pueden metabolizar el eucaliptol(se intoxica) provoca ataxia (descoordinación) y depresión grave",c:true},{t:"Es completamente seguro para perros y gatos, sirve como repelente natural",c:false},{t:"Solo las raíces son tóxicas, contienen mentol concentrado y es irritante para gatos",c:false}],fb:"El Eucalipto contiene eucaliptol (1,8-cineol) que los gatos no pueden metabolizar correctamente. Provoca hipersalivación, vómitos, depresión y ataxia. Los aceites esenciales de eucalipto son especialmente peligrosos para los gatos.",tags:["tag-red:🔴 Especialmente tóxico para gatos","tag-orange:🟠 Aceites esenciales: alto riesgo"],human:"Seguro en uso terapéutico para humanos."},
+  {type:'plant',name:"Geranio (Pelargonium spp.)",emoji:"🌸",bg:"linear-gradient(135deg,#2a0a15,#5a1a30)",cat:"Planta de balcón · Chile",q:"Los Geranios ¿qué efecto tienen sobre los gatos específicamente?",opts:[{t:"Son completamente seguros para gatos y perros",c:false},{t:"Solo causan dermatitis si el gato roza las hojas",c:false},{t:"posee quimicos (geraniol y linalool) que causan vómitos, depresión y dermatitis en gatos",c:true},{t:"Son tóxicos para perros pero inofensivos para gatos, se usa en repelente para perros ",c:false}],fb:"Los Geranios contienen ciertos quimicos (geraniol y linalool) que son aceites esenciales, que los gatos no pueden metabolizar eficientemente. Provoca vómitos, depresión, anorexia e hipersalivación.",tags:["tag-orange:🟠 Tóxico esp. para gatos","tag-yellow:🟡 Leve en perros"],human:"Esencialmente seguro para humanos."},
+  {type:'plant',name:"Narciso (Narcissus spp.)",emoji:"🌼",bg:"linear-gradient(135deg,#2a2a00,#5a5a10)",cat:"Bulbo ornamental primaveral",q:"Los Narcisos ¿por qué sus bulbos son especialmente peligrosos?",opts:[{t:"Sus bulbos parecen cebollas con un sabor dulce y pueden confundirse al ser ingeridos por perros",c:true},{t:"Solo las hojas presentan toxicidad significativa, sobretodo cuando son frescas ",c:false},{t:"Son completamente seguros excepto las flores, en especial las rojas",c:false},{t:"Solo tóxicos si el animal tiene alergias alimentarias previas",c:false}],fb:"Los bulbos de Narciso concentran ciertos químicos irritantes (alcaloides y oxalatos) los perros pueden desenterrarlos creyendo que son cebollas o papas. Provoca vómitos intensos, diarrea, convulsiones e hipotensión.",tags:["tag-red:🔴 Bulbos muy tóxicos","tag-orange:🟠 Riesgo de confusión con alimentos"],human:"Reportes de intoxicación humana por confusión de bulbos con cebollas."},
+  {type:'plant',name:"Tulipán (Tulipa spp.)",emoji:"🌷",bg:"linear-gradient(135deg,#2a0a0a,#6a2020)",cat:"Bulbo ornamental popular",q:"Los Tulipanes ¿en qué momento representan mayor riesgo?",opts:[{t:"Durante la floración — las flores son la parte más tóxica",c:false},{t:"En otoño-invierno cuando se plantan los bulbos — que son la parte más tóxica",c:true},{t:"Son seguros todo el año",c:false},{t:"Solo en primavera cuando liberan polen",c:false}],fb:"El mayor riesgo ocurre cuando se plantan o replantan bulbos. Los bulbos concentran tulipalina A y B. Los perros que excavan pueden encontrarlos. Provoca irritación oral, vómitos, diarrea y letargo.",tags:["tag-orange:🟠 Bulbos más tóxicos que flores","tag-yellow:🟡 Perros que excavan: mayor riesgo"],human:"Irritación de piel en jardineros ('dermatitis del tulipán')."},
+  {type:'plant',name:"Enredadera Comun  o Hiedra (Hedera helix)",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a0a,#1a5015)",cat:"Trepadora exterior · Chile",q:"La Hiedra (hoja de 3 puntas) es la enredadera más común y de mayor distribución en Chile ¿cuáles son sus componentes tóxicos principales?",opts:[{t:"Solo su savia es irritante al contacto",c:false},{t:"poseen ciertos químicos (hederagenina y saponinas) que causa vómitos, diarrea y posibles arritmias",c:true},{t:"Es completamente segura para todas las mascotas,",c:false},{t:"Solo tóxica para conejos y roedores, usada como repelente natural por este efecto",c:false}],fb:"La Hiedra contiene ciertos quimicos (hederagenina y saponinas) que al ingerirse provocan hipersalivación, vómitos, diarrea y dolor abdominal. La savia también causa dermatitis de contacto.",tags:["tag-orange:🟠 Toxicidad moderada","tag-yellow:🟡 Dermatitis de contacto"],human:"Dermatitis alérgica de contacto frecuente en personas que manejan Hiedra sin guantes."},
+  {type:'plant',name:"Flor de Pascua / Nochebuena",emoji:"🎄",bg:"linear-gradient(135deg,#2a0808,#5a1515)",cat:"Planta navideña · Chile",q:"La Flor de Pascua ¿su fama de 'muy tóxica' es exagerada o real?",opts:[{t:"Es completamente segura — su fama es un mito debido a su similitud a la planta del Amor",c:false},{t:"Es moderadamente tóxica — irrita boca y estómago pero raramente es grave si se come cruda",c:true},{t:"Es extremadamente tóxica — puede matar con solo una hoja usada como base para raticidas",c:false},{t:"Solo tóxica para gatos, causa daño hepaticos",c:false}],fb:"La Flor de Pascua tiene fama exagerada. Su savia lechosa irrita la piel, ojos y boca. Al ingerirse causa vómitos y diarrea. Raramente es grave o mortal. Sin embargo, si los síntomas persisten visitar al veterinario.",tags:["tag-orange:🟠 Toxicidad MODERADA (no extrema)","tag-yellow:🟡 Raramente grave"],human:"La savia puede irritar piel y ojos en humanos."},
+  {type:'plant',name:"Tradescantia / Planta del Amor",emoji:"💜",bg:"linear-gradient(135deg,#2a0a35,#5a1870)",cat:"Planta colgante decorativa · Muy popular Chile",q:"La Tradescantia ¿es altamente tóxica o solo causa molestias leves?",opts:[{t:"Es altamente tóxica — puede causar falla renal grave",c:false},{t:"Causa dermatitis de contacto e irritación gastrointestinal leve — no es gravemente tóxica",c:true},{t:"Es completamente pet-friendly",c:false},{t:"Solo tóxica para perros",c:false}],fb:"La Tradescantia tiene toxicidad relativamente baja. Puede causar dermatitis de contacto en animales con piel sensible y síntomas gastrointestinales leves si se ingiere en cantidad. No es una planta de urgencia como los Lirios o la Adelfa.",tags:["tag-yellow:🟡 Toxicidad baja","tag-orange:🟠 Dermatitis en pieles sensibles"],human:"Dermatitis de contacto en personas con piel sensible."},
+  {type:'plant',name:"Pothos de plata (Scindapsus)",emoji:"🍃",bg:"linear-gradient(135deg,#0a2a12,#1a5228)",cat:"Enredadera ornamental",q:"El Scindapsus vendido como 'Pothos de plata' ¿comparte su toxicidad?",opts:[{t:"No — el Scindapsus es la versión segura del Pothos, siendo toda la planta comestible incluso su fruto",c:false},{t:"Sí — contiene los mismos Cristales (oxalatos de calcio) con igual toxicidad",c:true},{t:"Solo tóxico para perros, los gatos tienen lenguas que resisten esas toxinas",c:false},{t:"Mucho menos tóxico que el Pothos real, el cual incluso puede ser consumido como snacks por perros y algunas aves",c:false}],fb:"El Pothos de plata (Scindapsus pictus) contiene cristales de oxalato de calcio prácticamente idénticos al Pothos. Presenta la misma toxicidad: ardor oral, hipersalivación, vómitos y dificultad para tragar.",tags:["tag-orange:🟠 Misma toxicidad que el Pothos","tag-red:🔴 No confundir con planta segura"],human:"Irritación de piel y ojos con la savia."},
+  {type:'plant',name:"Taro (Colocasia esculenta)",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a18,#1a5a35)",cat:"Planta tropical ornamental",q:"El Taro ornamental ¿es diferente al Taro comestible en cuanto a toxicidad?",opts:[{t:"Sí — el taro ornamental es seguro, incluso usado en reposteria",c:false},{t:"No — ambos contienen cristales (oxalatos); el comestible solo es seguro tras cocción prolongada",c:true},{t:"El taro ornamental es completamente seguro su nombre diferente es solo algo comercial ",c:false},{t:"Solo las raíces del taro ornamental son tóxicas, antiguamente usadas como purgante natural ",c:false}],fb:"Tanto el Taro ornamental como el comestible contienen cristales de oxalato cálcico. El taro comestible pierde los oxalatos con cocción prolongada. Para mascotas, ambas variedades son tóxicas en estado crudo.",tags:["tag-red:🔴 Ardor oral severo","tag-orange:🟠 Dificultad para tragar"],human:"El taro comestible solo es seguro para humanos bien cocinado."},
+  {type:'plant',name:"Planta Ti (Cordyline fruticosa)",emoji:"🌿",bg:"linear-gradient(135deg,#2a0a2a,#5a1a5a)",cat:"Planta ornamental tropical",q:"La Planta Ti ¿qué síntoma específico alerta de intoxicación grave en gatos?",opts:[{t:"La fiebre muy alta (por encima de 45°C)",c:false},{t:"Vómitos con sangre y pupilas dilatadas (midriasis)",c:true},{t:"Solo produce pérdida temporal del apetito,peligroso si el gato no come por mas de 20 dias",c:false},{t:"Produce coloración amarilla en los ojos, indetectable en ojos de gatos amarillos",c:false}],fb:"La Planta Ti es tóxica para ambas mascotas. En gatos los síntomas más alarmantes son vómitos (a veces con sangre), anorexia, hipersalivación y pupilas dilatadas.",tags:["tag-red:🔴 Vómitos con sangre posibles","tag-orange:🟠 Midriasis en gatos"],human:"Sin toxicidad conocida para humanos."},
+];
+
+// ══════════════════════════════════════════════════════
+// BANCO PLANTAS SEGURAS (10)
+// ══════════════════════════════════════════════════════
+const SAFE_PLANTS = [
+  {type:'plant',name:"Calatea (Calathea spp.) ✅ SEGURA",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a15,#1a5a30)",cat:"Planta tropical ornamental · Pet-friendly confirmada",q:"La Calatea de hojas decorativas ¿es segura para hogares con perros y gatos?",opts:[{t:"No — todas las plantas tropicales contienen oxalatos similares al Pothos",c:false},{t:"Sí — esta listada y reconocida como no tóxica para perros y gatos",c:true},{t:"Solo segura si está fuera del alcance de las mascotas que la muerden de forma ocasional",c:false},{t:"Solo para perros — los gatos deben evitarla , son atraidos por su fuerte olor salado",c:false}],fb:"¡La Calatea es completamente pet-friendly! Listada como no tóxica para perros y gatos. Es una de las mejores alternativas decorativas en lugar de el Pothos o Filodendro.",tags:["tag-green:✅ NO TÓXICA — recomendada para hogares con mascotas","tag-yellow:🟡 Ingestión excesiva: leve malestar digestivo"],human:"Completamente segura para humanos."},
+  {type:'plant',name:"Helecho de Boston ✅ SEGURO",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a10,#1a4820)",cat:"Helecho colgante · ",q:"El Helecho de Boston ¿comparte la toxicidad de otros helechos como el Helecho macho?",opts:[{t:"Sí — todos los helechos contienen el mismo quimico (tiaminasa)",c:false},{t:"No — el Helecho de Boston es no tóxico para perros y gatos",c:true},{t:"Solo las esporas son peligrosas, de riesgo en epocas de primavera",c:false},{t:"Es tóxico para gatos pero seguro para perros, se usa como repelente de gatos",c:false}],fb:"El Helecho de Boston (Nephrolepis exaltata) es no tóxico para perros y gatos. Importante distinción: el Helecho macho (Dryopteris) SÍ contiene un quimico (filixinato) que es tóxico.",tags:["tag-green:✅ NO TÓXICO para perros y gatos","tag-yellow:🟡 No confundir con Helecho macho (sí tóxico)"],human:"Inofensivo para humanos."},
+  {type:'plant',name:"Orquídea Phalaenopsis ✅ SEGURA",emoji:"🌸",bg:"linear-gradient(135deg,#2a0a25,#5a1850)",cat:"Flor ornamental · Muy vendida en Chile",q:"Las Orquídeas Phalaenopsis ¿son de la misma familia que los Lirios letales?",opts:[{t:"Sí — son Liliaceae, misma familia, igual que los Lirios",c:false},{t:"No — son Orchidaceae,una familia diferente, y son no tóxicas para perros y gatos",c:true},{t:"Solo las flores son tóxicas, especialmente en epoca de primavera",c:false},{t:"Solo peligrosas para gatos Naranjos que presentan alergia naturalmente",c:false}],fb:"Las Orquídeas Phalaenopsis pertenecen a la familia Orchidaceae, completamente diferente de los Lirios (Liliaceae). Son no tóxicas para perros y gatos. Los pesticidas comerciales representan mayor riesgo que la planta en sí — lavar las hojas al comprar.",tags:["tag-green:✅ NO TÓXICA — segura para perros y gatos","tag-yellow:🟡 Pesticidas comerciales: lavar hojas al comprar"],human:"Completamente segura para humanos."},
+  {type:'plant',name:"Suculentas roseta ✅ SEGURAS",emoji:"🪴",bg:"linear-gradient(135deg,#1a2a0a,#3a5018)",cat:"Suculentas(Echeverias) ornamentales · Pet-friendly",q:"Las Suculentas (Echeverias) ¿son una buena alternativa al Aloe Vera para hogares con mascotas?",opts:[{t:"No — todas las suculentas son igualmente tóxicas, producen el mismo efecto toxico",c:false},{t:"Sí — las Suculentas (Echeverias) son no tóxicas, a diferencia del Aloe Vera que sí lo es",c:true},{t:"Son seguras solo para perros, Altamente toxicas para gatos y conejos",c:false},{t:"Solo las Suculentas Echeverias verdes son seguras, al recibir poco sol se ponen rojas y se vuelven toxicas",c:false}],fb:"Las Suculentas (Echeverias) y la mayoría de suculentas roseta son no tóxicas para mascotas — al contrario del Aloe Vera y la Kalanchoe. Son plantas ideales para hogares con mascotas.",tags:["tag-green:✅ Echeveria: no tóxica — alternativa al Aloe Vera","tag-yellow:🟡 Espinas: riesgo físico leve en animales curiosos"],human:"Completamente seguras para humanos."},
+  {type:'plant',name:"Hierba gatera / Catnip ✅ SEGURA",emoji:"😸",bg:"linear-gradient(135deg,#1a0a2a,#3a1a5a)",cat:"Planta especial para gatos · Completamente segura",q:"La Hierba gatera que causa euforia en gatos ¿puede generar adicción o daño físico?",opts:[{t:"Sí — un quimico interno (nepetalactona) crea dependencia neurológica similar al alcohol ",c:false},{t:"No — es completamente segura, el efecto es inofensivo, temporal y no genera adicción",c:true},{t:"Solo segura en adultos — los gatitos menores de 6 meses no deben exponerse, se vuelven adictos a su consumo",c:false},{t:"Puede dañar el hígado con uso frecuente y desarrollar sindrome de abstinencia",c:false}],fb:"La hierba gatera (Nepeta cataria) es completamente segura. El  quimico en su interior (nepetalactona) activa receptores felinos causando euforia temporal (5-15 min) sin daño físico ni adicción. Solo el 65-70% de los gatos a ella responde (genéticamente determinado).",tags:["tag-green:✅ COMPLETAMENTE SEGURA — sin adicción ni daño","tag-yellow:🟡 Ingestión excesiva: leve malestar digestivo"],human:"El quimico (nepetalactona) tiene propiedades repelentes de insectos para humanos."},
+  {type:'plant',name:"Bambú real ✅ SEGURO",emoji:"🎍",bg:"linear-gradient(135deg,#0a2a10,#1a5020)",cat:"Planta exterior · NO confundir (Dracena)",q:"El bambú de jardín ¿es la misma planta que el 'Bambú de la suerte' de las floristerías?",opts:[{t:"Sí — son la misma planta, solo es un nombre comercial creado por marketing",c:false},{t:"No — el bambú real es no tóxico; el 'de la suerte' es la Dracena, tóxica para gatos",c:true},{t:"El bambú real es más tóxico que el de la suerte, sobretodo para gatos no desarrollados",c:false},{t:"Ambos son completamente seguros, su tallo es muy nutritivo",c:false}],fb:"El Bambú real (familia Bambusoideae) es no tóxico para mascotas. El 'Bambú de la suerte' es en realidad Dracaena sanderiana — una planta diferente que SÍ es tóxica para gatos.",tags:["tag-green:✅ Bambú REAL: seguro","tag-red:🔴 'Bambú de la suerte' = Dracena: tóxico para gatos"],human:"Los brotes de bambú son comestibles para humanos después de hervir."},
+  {type:'plant',name:"Planta del Dinero o Planta Ovni  (Pilea peperomioides) ✅ SEGURA",emoji:"🪴",bg:"linear-gradient(135deg,#0a2a0a,#1a4518)",cat:"Planta de interior de moda · Pet-friendly",q:"La Pilea peperomioides ¿es una alternativa segura al Pothos?",opts:[{t:"No — también contiene Cristales (oxalatos de calcio) como el Pothos, muy irritantes",c:false},{t:"Sí — la Pilea es no tóxica para perros y gatos, a diferencia del Pothos",c:true},{t:"Solo segura si se mantiene en altura ya que en suelo produce raices , que son toxicas",c:false},{t:"Es tóxica en la misma medida que la Planta de Jade, son de la misma familia",c:false}],fb:"La Plante del Dinero (Pilea peperomioides) no es tóxica para mascotas — una excelente alternativa al Pothos o Filodendro. No contiene cristales (oxalatos de calcio) como esas plantas.",tags:["tag-green:✅ NO TÓXICA — excelente alternativa al Pothos","tag-yellow:🟡 Sustrato con pesticidas: mayor riesgo que la planta"],human:"Completamente segura para humanos."},
+  {type:'plant',name:"Flor de Oro (Caléndula) ✅ SEGURA",emoji:"🌼",bg:"linear-gradient(135deg,#2a2a00,#5a5010)",cat:"Flor medicinal · Jardines chilenos",q:"La Caléndula de flores naranjas muy comun en todo el pais ¿puede confundirse con plantas peligrosas del mismo nombre?",opts:[{t:"No — todas las plantas llamadas 'Marigold',donde se incluye la Calendura son igualmente seguras",c:false},{t:"Sí — Calendula officinalis es segura, pero el 'Marigold africano' (Tagetes) puede irritar levemente, ambas plantas comparten tonalidades y colores ",c:true},{t:"La Caléndula es altamente tóxica sus flores se usan para ahuyentar Abejas",c:false},{t:"Solo las flores son seguras, las hojas son tóxicas, al masticarlas produce efecto de sedación",c:false}],fb:"La Calendula officinalis es no tóxica para mascotas. Distinción importante: el 'Marigold africano' (Tagetes) puede causar irritación gastrointestinal leve. Siempre verificar el nombre científico.",tags:["tag-green:✅ Calendula officinalis: segura","tag-yellow:🟡 No confundir con Tagetes (Marigold africano)"],human:"La caléndula es medicinal para humanos: antiinflamatoria y cicatrizante."},
+  {type:'plant',name:"Romero ✅ SEGURO en planta",emoji:"🌿",bg:"linear-gradient(135deg,#0a2a15,#1a4a28)",cat:"Hierba aromática · Jardín y cocina",q:"El Romero del jardín tiene muchos usos , en cocina y medicina humana ¿es el aceite esencial de Romero igualmente seguro para los gatos?",opts:[{t:"Sí — el aceite esencial es una versión igualmente segura muy usada como aromatizante y repelente ",c:false},{t:"No — la planta fresca es segura; el aceite esencial concentrado puede ser irritante y tóxico para gatos",c:true},{t:"Ambos son completamente tóxicos para mascotas , se usa como repelente ",c:false},{t:"El aceite esencial es más seguro porque está diluido, la resina de la planta contiene quimicos concentrados",c:false}],fb:"El Romero en jardín o maceta es generalmente seguro para perros y gatos. Sin embargo, el ACEITE ESENCIAL de romero concentrado (difusores, aplicación directa) es problemático para gatos — no metabolizan bien los terpenos ( quimicos en su compuesto).",tags:["tag-green:✅ Planta fresca: segura en cantidades normales","tag-red:🔴 Aceite esencial concentrado: evitar en hogares con gatos"],human:"El romero es ampliamente usado en gastronomía chilena."},
+  {type:'plant',name:"La Primavera  (Primula spp.)",emoji:"🌸",bg:"linear-gradient(135deg,#2a0a25,#5a1858)",cat:"Primavera planta de floración invernal · Chile",q:"Las Primaveras (Prímulas) ¿qué tipo de reacción producen principalmente?",opts:[{t:"Alta toxicidad sistémica severa, daño hepatico",c:false},{t:"Reacción irritante y alérgica — dermatitis e irritación gastrointestinal",c:true},{t:"Son completamente seguras para todas las mascotas, usadas como premio para algunos herbívoros",c:false},{t:"Solo tóxicas para perros de raza pequeña, razas grandes y gatos metabolizan sus toxinas sin problemas ",c:false}],fb:"Las Primaveras (Prímulas) contienen primatoxina A, una sustancia irritante. La exposición causa principalmente dermatitis de contacto e irritación gastrointestinal. No suelen causar toxicidad sistémica grave.",tags:["tag-orange:🟠 Dermatitis e irritación","tag-yellow:🟡 Raramente grave"],human:"Dermatitis de contacto frecuente en personas que manejan Prímulas."},
+];
+
+// ══════════════════════════════════════════════════════
+// LÓGICA GENERAL
+// ══════════════════════════════════════════════════════
+const ALL_PLANTS = [...PLANTS, ...SAFE_PLANTS];
+const QS = 10;
+
+// Garantizar que siempre haya al menos 1 planta del grupo MUY TÓXICAS
+const MUY_TOXICAS = [
+  "Lirios (Lilium spp.)",
+  "Palma de Sagú (Cycas revoluta)",
+  "Laurel en Flor / Adelfa (Nerium oleander)",
+  "Planta de la Suerte ( planta del castigo)",
+  "Azalea",
+];
+
+let session = [], qIdx = 0, score = 0, answers = [];
+
+function openPanel(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePanel(id, e) {
+  if (!e || e.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  // Garantizar 1 planta muy tóxica
+  const toxicPool = PLANTS.filter(q => MUY_TOXICAS.includes(q.name));
+  const guaranteed = shuffle(toxicPool)[0];
+
+  // El resto: pool completo menos la garantizada
+  const rest = shuffle(ALL_PLANTS.filter(q => q.name !== guaranteed.name)).slice(0, QS - 1);
+
+  session = shuffle([guaranteed, ...rest]);
+  qIdx = 0; score = 0; answers = [];
+
+  document.getElementById('screen-intro').style.display = 'none';
+  document.getElementById('screen-results').style.display = 'none';
+  document.getElementById('screen-question').style.display = 'flex';
+  document.getElementById('screen-question').style.flexDirection = 'column';
+  document.getElementById('progress-wrap').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = session[qIdx];
+  document.getElementById('prog-label').textContent = `Pregunta ${qIdx + 1} de ${QS}`;
+  document.getElementById('prog-score').textContent = `✓ ${score}`;
+  document.getElementById('prog-fill').style.width = `${(qIdx / QS) * 100}%`;
+  document.getElementById('q-visual-bg').style.background = q.bg;
+  document.getElementById('q-emoji').textContent = q.emoji;
+
+  const badge = document.getElementById('q-badge');
+  const isAlertSafe = q.name.includes('✅');
+  badge.textContent = isAlertSafe ? '🌿 Planta Segura' : '🌿 Planta';
+  badge.className = 'q-badge ' + (isAlertSafe ? 'badge-plant-safe' : 'badge-plant');
+
+  document.getElementById('q-cat-label').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('btn-exit').style.display = 'none';
+  document.getElementById('human-risk').style.display = 'none';
+
+  const opts = shuffle(q.opts.map(o => ({ ...o })));
+  const letters = ['A', 'B', 'C', 'D'];
+  const cont = document.getElementById('options');
+  cont.innerHTML = '';
+  opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt.t}</span>`;
+    btn.onclick = () => answer(btn, opt.c, opts);
+    cont.appendChild(btn);
+  });
+}
+
+function answer(btn, correct, opts) {
+  if (document.getElementById('btn-next').style.display !== 'none') return;
+  const q = session[qIdx];
+  document.querySelectorAll('.opt-btn').forEach((b, i) => {
+    b.classList.add('disabled');
+    if (opts[i].c) b.classList.add('correct');
+  });
+  if (correct) { score++; btn.classList.add('correct'); }
+  else btn.classList.add('incorrect');
+  answers.push({ correct, q });
+
+  const fb = document.getElementById('feedback');
+  document.getElementById('fb-icon').textContent = correct ? '✅' : '📚';
+  document.getElementById('fb-title').textContent = correct ? '¡Correcto!' : 'Aprendamos esto:';
+  document.getElementById('fb-text').textContent = q.fb;
+
+  const tagsEl = document.getElementById('fb-tags');
+  tagsEl.innerHTML = '';
+  if (q.tags) {
+    q.tags.forEach(t => {
+      const [cls, ...rest] = t.split(':');
+      const s = document.createElement('span');
+      s.className = `fb-tag ${cls}`;
+      s.textContent = rest.join(':');
+      tagsEl.appendChild(s);
+    });
+  }
+  if (q.human) {
+    document.getElementById('human-risk').style.display = 'flex';
+    document.getElementById('human-risk-text').textContent = q.human;
+  }
+
+  fb.className = 'feedback';
+  const hasRedTag = q.tags && q.tags.some(t => t.includes('tag-red'));
+  const hasOrangeTag = q.tags && q.tags.some(t => t.includes('tag-orange'));
+  const hasGreenTag = q.tags && q.tags.some(t => t.includes('tag-green') && !hasRedTag && !hasOrangeTag);
+  if (hasRedTag) fb.classList.add('danger');
+  else if (hasOrangeTag) fb.classList.add('warning');
+  else if (hasGreenTag) fb.classList.add('safe');
+  fb.style.display = 'block';
+
+  const nb = document.getElementById('btn-next');
+  nb.style.display = 'block';
+  nb.textContent = qIdx === QS - 1 ? 'Ver resultados 🎯' : 'Siguiente →';
+  document.getElementById('btn-exit').style.display = 'block';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= QS) { showResults(); return; }
+  renderQuestion();
+  window.scrollTo(0, 0);
+}
+
+function showResults() {
+  saveRound(score);
+  document.getElementById('screen-question').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('screen-results').style.display = 'flex';
+  document.getElementById('screen-results').style.flexDirection = 'column';
+  document.getElementById('screen-results').style.alignItems = 'center';
+
+  const pct = score / QS;
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-sub').textContent = `DE ${QS}`;
+  const arc = document.getElementById('score-arc');
+  const circ = 364.4;
+  arc.style.strokeDashoffset = circ - (circ * pct);
+  arc.style.stroke = pct >= 0.8 ? '#56d364' : pct >= 0.5 ? '#d29922' : '#f85149';
+
+  let title, msg;
+  if (pct === 1) { title = '🏆 ¡Experta en plantas!'; msg = 'Conocimiento excepcional. ¡Tu hogar es el más seguro para las mascotas!'; }
+  else if (pct >= 0.8) { title = '🌟 ¡Muy bien!'; msg = 'Gran conocimiento sobre plantas. Revisa lo que fallaste para completar tu aprendizaje.'; }
+  else if (pct >= 0.5) { title = '🌱 Nivel intermedio'; msg = 'Buen inicio. Hay plantas comunes que representan más riesgo del que parecen — ¡sigue practicando!'; }
+  else { title = '⚠️ Hay plantas que revisar'; msg = 'Hay plantas comunes en hogares chilenos que son peligrosas. Te recomendamos revisar el listado.'; }
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+
+  const sl = document.getElementById('summary-list');
+  sl.innerHTML = '';
+  answers.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'sum-item';
+    div.innerHTML = `<div class="sum-emoji">${a.q.emoji}</div><div class="sum-info"><div class="sum-name">${a.q.name}</div><div class="sum-sub">${a.q.cat}</div></div><div class="sum-result">${a.correct ? '✅' : '❌'}</div>`;
+    sl.appendChild(div);
+  });
+}
+
+function showIntro() {
+  document.getElementById('screen-results').style.display = 'none';
+  document.getElementById('screen-question').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('screen-intro').style.display = 'flex';
+  document.getElementById('screen-intro').style.flexDirection = 'column';
+  loadScoreWidget();
+}
+
+function exitToMenu() { document.getElementById('exit-modal').style.display = 'flex'; }
+function exitConfirm() {
+  document.getElementById('exit-modal').style.display = 'none';
+  showIntro();
+}
+function exitCancel() { document.getElementById('exit-modal').style.display = 'none'; }
+
+// ── Estadísticas locales ──
+function saveRound(s) {
+  try {
+    const stored = localStorage.getItem('toxivet-plantas-rounds');
+    const data = stored ? JSON.parse(stored) : { total: 0, scores: [] };
+    data.total++;
+    data.scores.push(s);
+    if (data.scores.length > 50) data.scores = data.scores.slice(-50);
+    localStorage.setItem('toxivet-plantas-rounds', JSON.stringify(data));
+    loadScoreWidget();
+  } catch (e) {}
+}
+
+function loadScoreWidget() {
+  try {
+    const stored = localStorage.getItem('toxivet-plantas-rounds');
+    if (!stored) return;
+    const data = JSON.parse(stored);
+    if (!data || data.total === 0) return;
+    const best = Math.max(...data.scores);
+    const avg = (data.scores.reduce((a, b) => a + b, 0) / data.scores.length).toFixed(1);
+    document.getElementById('sw-rounds').textContent = data.total;
+    document.getElementById('sw-best').textContent = best + `/${QS}`;
+    document.getElementById('sw-avg').textContent = avg;
+    document.getElementById('score-widget').style.display = 'flex';
+  } catch (e) {}
+}
+
+loadScoreWidget();
+</script>
+</body>
+</html>
